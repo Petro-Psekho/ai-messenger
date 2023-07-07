@@ -5,18 +5,6 @@ import Home from './components/Home/Home';
 import UserList from './components/UserList/UserList';
 import Chat from './components/Chat/Chat';
 
-// const App = () => {
-//   return (
-//     <Router>
-//       <Routes>
-//         <Route path="/" element={<Home />} />
-//         <Route path="/users" element={<UserList />} />
-//         <Route path="/chat/:username" element={<Chat />} />
-//       </Routes>
-//     </Router>
-//   );
-// };
-
 const App = () => {
   return (
     <Router>
