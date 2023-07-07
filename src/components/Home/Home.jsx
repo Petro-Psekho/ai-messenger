@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HomeContainer } from './Home.styled';
-import { Select, MenuItem } from '@mui/material';
+import { HomeContainer, FormContainer } from './Home.styled';
+import { Select, MenuItem, FormControl, InputLabel, TextField } from '@mui/material';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -10,6 +10,7 @@ const Home = () => {
 
   const handleSubmit = e => {
     e.preventDefault();
+    console.log(e);
     // Проверка введенных данных
 
     // Переход на страницу списка пользователей с передачей имени пользователя и языка
@@ -18,22 +19,37 @@ const Home = () => {
 
   const handleLanguageChange = event => {
     setLanguage(event.target.value);
+    console.log(event.target.value);
   };
 
   return (
     <HomeContainer>
       <h1>Home</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
+      <FormContainer onSubmit={handleSubmit}>
+        {/* <label>
           Username:
           <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
-        </label>
-        <br />
-        <label>
-          Language:
-          <Select value={language} onChange={handleLanguageChange} displayEmpty>
+        </label> */}
+
+        <TextField
+          autoComplete="off"
+          id="outlined-basic"
+          label="Username"
+          variant="filled"
+          onChange={e => setUsername(e.target.value)}
+        />
+
+        <FormControl sx={{ m: 1, minWidth: 170 }} size="small">
+          <InputLabel id="demo-select-small-label">Language</InputLabel>
+          <Select
+            labelId="demo-select-small-label"
+            id="demo-select-small"
+            value={language}
+            label="Language"
+            onChange={handleLanguageChange}
+          >
             <MenuItem value="" disabled>
-              Select Language
+              <em>Select Language</em>
             </MenuItem>
             <MenuItem value="uk">Українська</MenuItem>
             <MenuItem value="ru">Русский</MenuItem>
@@ -42,10 +58,10 @@ const Home = () => {
             <MenuItem value="it">Italiano</MenuItem>
             <MenuItem value="md">Moldovenească</MenuItem>
           </Select>
-        </label>
-        <br />
+        </FormControl>
+
         <button type="submit">Start Chatting</button>
-      </form>
+      </FormContainer>
     </HomeContainer>
   );
 };
