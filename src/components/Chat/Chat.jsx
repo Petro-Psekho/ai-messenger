@@ -11,8 +11,6 @@ const Chat = ({ currentUser }) => {
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
 
-  console.log('userId', userId);
-
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -29,19 +27,28 @@ const Chat = ({ currentUser }) => {
   }, [userId]);
 
   useEffect(() => {
+    console.log('Socket connection started');
+
     socket.emit('join', { userId });
 
     return () => {
-      socket.disconnect();
+      console.log('Socket connection closed');
+      // Здесь мы будем отписываться от события 'message'
+      socket.off('message');
     };
   }, [userId]);
 
   useEffect(() => {
+    console.log('Listening for messages');
+
     socket.on('message', message => {
+      console.log('Received message:', message);
       setMessages(prevMessages => [...prevMessages, message]);
     });
 
     return () => {
+      console.log('Stopped listening for messages');
+      // Здесь мы будем отписываться от события 'message'
       socket.off('message');
     };
   }, []);
