@@ -1,41 +1,60 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HomeContainer, FormContainer } from './Home.styled';
+import axios from 'axios';
+import { RegisterContainer, FormContainer } from './Register.styled';
 import { Select, MenuItem, FormControl, InputLabel, TextField } from '@mui/material';
 
-const Home = () => {
-  const navigate = useNavigate();
+const Register = () => {
   const [username, setUsername] = useState('');
   const [language, setLanguage] = useState('');
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    console.log(e);
-    // Проверка введенных данных
+  const navigate = useNavigate();
 
-    // Переход на страницу списка пользователей с передачей имени пользователя и языка
-    navigate(`/users?username=${username}&language=${language}`);
+  const handleSubmit = async e => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('http://localhost:5000/users', {
+        username,
+        language,
+      });
+
+      const newUser = await response.data;
+
+      // console.log('newUser----------->', newUser);
+
+      await localStorage.setItem('loginedUser', JSON.stringify(newUser.username));
+
+      const updatedUsersResponse = await axios.get('http://localhost:5000/users', {
+        params: {
+          language,
+        },
+      });
+
+      const updatedUsers = await updatedUsersResponse.data;
+
+      // console.log('updatedUsers----------->', updatedUsers);
+
+      await navigate('/users', { state: { users: updatedUsers } });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleLanguageChange = event => {
     setLanguage(event.target.value);
-    console.log(event.target.value);
   };
 
   return (
-    <HomeContainer>
-      <h1>Home</h1>
+    <RegisterContainer>
+      <h2>SignUp</h2>
       <FormContainer onSubmit={handleSubmit}>
-        {/* <label>
-          Username:
-          <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
-        </label> */}
-
         <TextField
           autoComplete="off"
           id="outlined-basic"
           label="Username"
           variant="filled"
+          value={username}
           onChange={e => setUsername(e.target.value)}
         />
 
@@ -62,8 +81,8 @@ const Home = () => {
 
         <button type="submit">Start Chatting</button>
       </FormContainer>
-    </HomeContainer>
+    </RegisterContainer>
   );
 };
 
-export default Home;
+export default Register;

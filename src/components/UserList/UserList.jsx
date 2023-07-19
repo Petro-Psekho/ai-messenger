@@ -1,43 +1,72 @@
-import { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { UserListContainer } from './UserList.styled';
+import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-const UserList = () => {
-  const location = useLocation();
-  const [users, setUsers] = useState([]);
+const UserList = ({ currentUser }) => {
+  const [userList, setUserList] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        // Запрос к серверу для получения списка пользователей
-        const response = await axios.get('API_URL/users');
-        setUsers(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     fetchUsers();
   }, []);
 
-  const { username, language } = new URLSearchParams(location.search);
+  useEffect(() => {
+    console.log('userList-------------->>>>', userList);
+  }, [userList]);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/users');
+      const users = response.data;
+      setUserList(users);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDeleteUser = async id => {
+    try {
+      await axios.delete(`http://localhost:5000/users/${id}`);
+      const updatedUserList = userList.filter(user => user._id !== id);
+      setUserList(updatedUserList);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleChatClick = (userId, username) => {
+    navigate(`/chat/${userId}?currentUser=${currentUser}&username=${username}`);
+  };
+
+  if (!userList || userList.length === 0) {
+    return <p>No users available.</p>;
+  }
 
   return (
-    <UserListContainer>
+    <div>
       <h1>User List</h1>
-      <p>Logged in as: {username}</p>
-      <p>Language: {language}</p>
-      <h2>Available Users:</h2>
       <ul>
-        {users.map(user => (
-          <li key={user.id}>
-            <Link to={`/chat/${user.username}`}>{user.username}</Link>
+        {userList.map(user => (
+          <li key={user._id}>
+            <p>
+              {user.username} ({user.language})
+              {currentUser && (
+                <>
+                  <button onClick={() => handleDeleteUser(user._id)}>Delete</button>
+                  <button onClick={() => handleChatClick(user._id, user.username)}>Chat</button>
+                </>
+              )}
+            </p>
           </li>
         ))}
       </ul>
-    </UserListContainer>
+    </div>
   );
+};
+
+UserList.propTypes = {
+  currentUser: PropTypes.string,
 };
 
 export default UserList;

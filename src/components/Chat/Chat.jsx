@@ -1,42 +1,75 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { ChatContainer } from './Chat.styled';
+import io from 'socket.io-client';
+import PropTypes from 'prop-types';
 
-const Chat = () => {
-  const { username } = useParams();
+const socket = io('http://localhost:5000');
+
+const Chat = ({ currentUser }) => {
+  const { userId } = useParams();
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
 
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        // Запрос к серверу для получения сообщений
-        const response = await axios.get(`API_URL/messages?username=${username}`);
-        setMessages(response.data);
+        const response = await axios.get(`http://localhost:5000/messages?userId=${userId}`);
+
+        const messagesData = response.data;
+        setMessages(messagesData);
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchMessages();
-  }, [username]);
+  }, [userId]);
+
+  useEffect(() => {
+    socket.emit('join', { userId });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [userId]);
+
+  useEffect(() => {
+    socket.on('message', message => {
+      setMessages(prevMessages => [...prevMessages, message]);
+    });
+
+    return () => {
+      socket.off('message');
+    };
+  }, []);
 
   const handleSubmit = async e => {
     e.preventDefault();
-    // Отправка сообщения на сервер
 
-    // Очистка поля ввода сообщения
-    setMessageInput('');
+    if (messageInput.trim() === '') {
+      return;
+    }
+
+    try {
+      await axios.post('http://localhost:5000/messages', { userId, text: messageInput });
+      setMessageInput('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
   };
 
+  if (!currentUser) {
+    return <p>Please log in to view the chat.</p>;
+  }
+
   return (
-    <ChatContainer>
+    <div>
       <h1>Chat</h1>
-      <h2>User: {username}</h2>
+      <h2>User: {currentUser}</h2>
       <div>
         {messages.map(message => (
-          <div key={message.id}>
+          <div key={message._id}>
             <p>{message.text}</p>
           </div>
         ))}
@@ -45,8 +78,12 @@ const Chat = () => {
         <input type="text" value={messageInput} onChange={e => setMessageInput(e.target.value)} />
         <button type="submit">Send</button>
       </form>
-    </ChatContainer>
+    </div>
   );
+};
+
+Chat.propTypes = {
+  currentUser: PropTypes.string,
 };
 
 export default Chat;
