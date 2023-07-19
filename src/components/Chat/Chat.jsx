@@ -61,7 +61,11 @@ const Chat = ({ currentUser }) => {
     }
 
     try {
-      await axios.post('http://localhost:5000/messages', { userId, text: messageInput });
+      await axios.post('http://localhost:5000/messages', {
+        userId,
+        chatUserId: userId,
+        text: messageInput,
+      });
       setMessageInput('');
     } catch (error) {
       console.error('Failed to send message:', error);
