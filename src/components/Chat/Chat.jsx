@@ -11,6 +11,8 @@ const Chat = ({ currentUser }) => {
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
 
+  console.log('userId', userId);
+
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -66,7 +68,8 @@ const Chat = ({ currentUser }) => {
   return (
     <div>
       <h1>Chat</h1>
-      <h2>User: {currentUser}</h2>
+      <h2>CurrentUser: {currentUser}</h2>
+      <h2>ChatUser: {userId}</h2>
       <div>
         {messages.map(message => (
           <div key={message._id}>

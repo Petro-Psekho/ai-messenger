@@ -36,7 +36,7 @@ const UserList = ({ currentUser }) => {
   };
 
   const handleChatClick = (userId, username) => {
-    navigate(`/chat/${userId}?currentUser=${currentUser}&username=${username}`);
+    navigate(`/chat/${userId}&username${username}`);
   };
 
   if (!userList || userList.length === 0) {
