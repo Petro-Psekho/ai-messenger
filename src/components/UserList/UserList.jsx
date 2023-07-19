@@ -11,10 +11,6 @@ const UserList = ({ currentUser }) => {
     fetchUsers();
   }, []);
 
-  useEffect(() => {
-    console.log('userList-------------->>>>', userList);
-  }, [userList]);
-
   const fetchUsers = async () => {
     try {
       const response = await axios.get('http://localhost:5000/users');
@@ -35,8 +31,8 @@ const UserList = ({ currentUser }) => {
     }
   };
 
-  const handleChatClick = (userId, username) => {
-    navigate(`/chat/${userId}&username${username}`);
+  const handleChatClick = userId => {
+    navigate(`/chat/${userId}`);
   };
 
   if (!userList || userList.length === 0) {
