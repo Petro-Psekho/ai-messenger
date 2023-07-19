@@ -10,6 +10,7 @@ const Chat = ({ currentUser }) => {
   const { userId } = useParams();
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState('');
+  const [chatUserName, setChatUserName] = useState('');
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -33,7 +34,6 @@ const Chat = ({ currentUser }) => {
 
     return () => {
       console.log('Socket connection closed');
-      // Здесь мы будем отписываться от события 'message'
       socket.off('message');
     };
   }, [userId]);
@@ -48,10 +48,30 @@ const Chat = ({ currentUser }) => {
 
     return () => {
       console.log('Stopped listening for messages');
-      // Здесь мы будем отписываться от события 'message'
       socket.off('message');
     };
   }, []);
+
+  useEffect(() => {
+    // В этом useEffect мы можем получить имя пользователя по его userId.
+
+    const fetchChatUserName = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/users`);
+        const usersData = response.data;
+        const chatUser = usersData.find(user => user._id === userId);
+        if (chatUser) {
+          setChatUserName(chatUser.username);
+        } else {
+          console.log('User not found:', userId);
+        }
+      } catch (error) {
+        console.error('Error fetching chat user:', error);
+      }
+    };
+
+    fetchChatUserName();
+  }, [userId]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -80,7 +100,7 @@ const Chat = ({ currentUser }) => {
     <div>
       <h1>Chat</h1>
       <h2>CurrentUser: {currentUser}</h2>
-      <h2>ChatUser: {userId}</h2>
+      <h2>ChatUser: {chatUserName}</h2> {/* Используем chatUserName вместо userId */}
       <div>
         {messages.map(message => (
           <div key={message._id}>
