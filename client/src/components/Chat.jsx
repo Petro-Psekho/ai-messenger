@@ -17,6 +17,9 @@ const Chat = () => {
   const [state, setState] = useState([]);
   const [message, setMessage] = useState("");
   const [isOpen, setOpen] = useState(false);
+  const [users, setUsers] = useState(0);
+
+  console.log("users", users);
 
   useEffect(() => {
     const searchParams = Object.fromEntries(new URLSearchParams(search));
@@ -27,6 +30,12 @@ const Chat = () => {
   useEffect(() => {
     socket.on("message", ({ data }) => {
       setState((_state) => [..._state, data]);
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on("joinRoom", ({ data: { users } }) => {
+      setUsers(users.length);
     });
   }, []);
 
@@ -53,7 +62,7 @@ const Chat = () => {
     <div className={styles.wrap}>
       <div className={styles.header}>
         <div className={styles.title}>{params.room}</div>
-        <div className={styles.users}> 0 users in this room</div>
+        <div className={styles.users}> {users} users in this room</div>
         <button className={styles.left} onClick={leftRoom}>
           Left the room
         </button>
