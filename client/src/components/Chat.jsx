@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import io from "socket.io-client";
-import { useLocation } from "react-router-dom";
-import EmojiPicker, { Emoji } from "emoji-picker-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import EmojiPicker from "emoji-picker-react";
 
 import styles from "../styles/Chat.module.css";
 import icon from "../images/emoji.svg";
@@ -12,6 +12,7 @@ const socket = io.connect("http://localhost:5000");
 
 const Chat = () => {
   const { search } = useLocation();
+  const navigate = useNavigate();
 
   const [params, setParams] = useState({ room: "", user: "" });
   const [state, setState] = useState([]);
@@ -34,14 +35,17 @@ const Chat = () => {
   }, []);
 
   useEffect(() => {
-    socket.on("joinRoom", ({ data: { users } }) => {
+    socket.on("room", ({ data: { users } }) => {
       setUsers(users.length);
     });
   }, []);
 
   console.log("state", state);
 
-  const leftRoom = () => {};
+  const leftRoom = () => {
+    socket.emit("leftRoom", { params });
+    navigate("/");
+  };
 
   const handleChange = ({ target: { value } }) => setMessage(value);
 
