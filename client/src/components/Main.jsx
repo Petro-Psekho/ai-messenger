@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import styles from "../styles/Main.module.css";
 
 const FIELDS = {
   NAME: "name",
+  LANG: "lang",
   ROOM: "room",
 };
 
 const Main = () => {
-  const { NAME, ROOM } = FIELDS;
-  const [values, setValues] = useState({ [NAME]: "", [ROOM]: "" });
+  const { NAME, ROOM, LANG } = FIELDS;
+  const [values, setValues] = useState({ [NAME]: "", [ROOM]: "", [LANG]: "" });
 
   console.log(values);
 
@@ -55,10 +56,23 @@ const Main = () => {
               required
             />
           </div>
+
+          <div className={styles.group}>
+            <input
+              className={styles.input}
+              type="text"
+              name="lang"
+              placeholder="Languege"
+              value={values[LANG]}
+              onChange={handleChange}
+              autoComplete="off"
+              required
+            />
+          </div>
           <Link
             className={styles.group}
             onClick={handleClick}
-            to={`/chat?name=${values[NAME]}&room=${values[ROOM]}`}
+            to={`/chat?name=${values[NAME]}&room=${values[ROOM]}&lang=${values[LANG]}`}
           >
             <button className={styles.button} type="submit">
               Sign In

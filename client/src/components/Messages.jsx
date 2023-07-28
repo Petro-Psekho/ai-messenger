@@ -1,5 +1,3 @@
-import React from "react";
-
 import styles from "../styles/Messages.module.css";
 
 const Messages = ({ messages, name }) => {
