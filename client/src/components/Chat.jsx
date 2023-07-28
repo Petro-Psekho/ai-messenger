@@ -36,7 +36,7 @@ const Chat = () => {
 
   const handleChange = ({ target: { value } }) => setMessage(value);
 
-  const handelSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!message) {
@@ -62,7 +62,7 @@ const Chat = () => {
         <Messages messages={state} name={params.name} />
       </div>
 
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.input}>
           <input
             type="text"
@@ -84,7 +84,7 @@ const Chat = () => {
           )}
         </div>
         <div className={styles.button}>
-          <input type="submit" onSubmit={handelSubmit} value="Sand a message" />
+          <input type="submit" onSubmit={handleSubmit} value="Sand a message" />
         </div>
       </form>
     </div>

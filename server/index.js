@@ -6,7 +6,7 @@ const cors = require("cors");
 const app = express();
 
 const route = require("./route");
-const { addUser } = require("./users");
+const { addUser, findUser } = require("./users");
 
 app.use(cors({ origin: "*" }));
 app.use(route);
@@ -33,6 +33,14 @@ io.on("connection", (socket) => {
     socket.broadcast.to(user.room).emit("message", {
       data: { user: { name: "Admin" }, message: `${user.name} has joined` },
     });
+  });
+
+  socket.on("sendMessage", ({ message, params }) => {
+    const user = findUser(params);
+
+    if (user) {
+      io.to(user.room).emit("message", { data: { user, message } });
+    }
   });
 
   io.on("disconnect", () => {
