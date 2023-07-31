@@ -5,9 +5,13 @@ let users = [];
 const findUser = (user) => {
   const userName = trimStr(user.name);
   const userRoom = trimStr(user.room);
+  const userLang = trimStr(user.lang);
 
   return users.find(
-    (user) => trimStr(user.name) === userName && trimStr(user.room) === userRoom
+    (user) =>
+      trimStr(user.name) === userName &&
+      trimStr(user.room) === userRoom &&
+      trimStr(user.room) === userLang
   );
 };
 

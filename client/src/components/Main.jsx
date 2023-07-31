@@ -13,8 +13,6 @@ const Main = () => {
   const { NAME, ROOM, LANG } = FIELDS;
   const [values, setValues] = useState({ [NAME]: "", [ROOM]: "", [LANG]: "" });
 
-  console.log(values);
-
   const handleChange = ({ target: { value, name } }) => {
     setValues({ ...values, [name]: value });
   };

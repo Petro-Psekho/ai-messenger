@@ -14,13 +14,11 @@ const Chat = () => {
   const { search } = useLocation();
   const navigate = useNavigate();
 
-  const [params, setParams] = useState({ room: "", user: "" });
+  const [params, setParams] = useState({ room: "", user: "", lang: "" });
   const [state, setState] = useState([]);
   const [message, setMessage] = useState("");
   const [isOpen, setOpen] = useState(false);
   const [users, setUsers] = useState(0);
-
-  console.log("users", users);
 
   useEffect(() => {
     const searchParams = Object.fromEntries(new URLSearchParams(search));
@@ -39,8 +37,6 @@ const Chat = () => {
       setUsers(users.length);
     });
   }, []);
-
-  console.log("state", state);
 
   const leftRoom = () => {
     socket.emit("leftRoom", { params });
@@ -65,7 +61,9 @@ const Chat = () => {
   return (
     <div className={styles.wrap}>
       <div className={styles.header}>
-        <div className={styles.title}>{params.room}</div>
+        <div className={styles.title}>
+          {params.room} ({params.lang})
+        </div>
         <div className={styles.users}> {users} users in this room</div>
         <button className={styles.left} onClick={leftRoom}>
           Left the room

@@ -21,10 +21,10 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("join", ({ name, room }) => {
+  socket.on("join", ({ name, room, lang }) => {
     socket.join(room);
 
-    const { user, isExist } = addUser({ name, room });
+    const { user, isExist } = addUser({ name, room, lang });
 
     const userMessage = isExist
       ? `${user.name}, here you go again `
@@ -45,6 +45,9 @@ io.on("connection", (socket) => {
 
   socket.on("sendMessage", ({ message, params }) => {
     const user = findUser(params);
+
+    console.log("message ->", message);
+    console.log("params ->", params);
 
     if (user) {
       io.to(user.room).emit("message", { data: { user, message } });
