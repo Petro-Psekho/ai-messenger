@@ -3,6 +3,11 @@ const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const app = express();
+const axios = require("axios");
+
+require("dotenv").config();
+
+const { API_KEY, API_URL, MODEL } = process.env;
 
 const route = require("./route");
 const { addUser, findUser, getRoomUsers, removeUser } = require("./users");
@@ -18,6 +23,37 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+
+async function translateMessage(message, lang) {
+  try {
+    const response = await axios.post(
+      API_URL,
+      {
+        model: MODEL,
+        messages: [
+          {
+            role: "system",
+            content: `you're a professional polyglot translator, translate the message into ${lang}`,
+          },
+          { role: "user", content: message },
+        ],
+        temperature: 0.7,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_KEY}`,
+        },
+      }
+    );
+
+    return response.data.choices[0].message.content;
+  } catch (error) {
+    console.error(`Call error API ${MODEL}:`, error.message);
+
+    throw error;
+  }
+}
 
 io.on("connection", (socket) => {
   socket.on("join", ({ name, room, lang }) => {
@@ -44,11 +80,23 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("sendMessage", ({ message, params }) => {
+  socket.on("sendMessage", async ({ message, params }) => {
     const user = findUser(params);
 
+    console.log("user ===>", user);
+
+    // if (user) {
+    //   io.to(user.room).emit("message", { data: { user, message } });
+    // }
+
     if (user) {
-      io.to(user.room).emit("message", { data: { user, message } });
+      // Здесь вызываем функцию для перевода сообщения на язык комнаты
+      const translatedMessage = await translateMessage(message, user.lang);
+
+      // Отправляем переведенное сообщение обратно в комнату
+      io.to(user.room).emit("message", {
+        data: { user, message: translatedMessage },
+      });
     }
   });
 
