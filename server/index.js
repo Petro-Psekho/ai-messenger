@@ -10,10 +10,12 @@ require("dotenv").config();
 const { API_KEY, API_URL, MODEL } = process.env;
 
 const route = require("./route");
+
 const { addUser, findUser, getRoomUsers, removeUser } = require("./users");
 
 app.use(cors({ origin: "*" }));
 app.use(route);
+app.use(express.json());
 
 const server = http.createServer(app);
 
@@ -24,7 +26,40 @@ const io = new Server(server, {
   },
 });
 
+app.post("/translate", async (req, res) => {
+  const { message, lang } = req.body;
+  try {
+    const response = await axios.post(
+      API_URL,
+      {
+        model: MODEL,
+        messages: [
+          {
+            role: "system",
+            content: `you're a professional polyglot translator, translate the message into ${lang}`,
+          },
+          { role: "user", content: message },
+        ],
+        temperature: 0.7,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_KEY}`,
+        },
+      }
+    );
+
+    const translatedMessage = response.data.choices[0].message.content;
+    res.json({ translatedMessage });
+  } catch (error) {
+    console.error(`Call error API ${MODEL}:`, error.message);
+    res.status(500).json({ error: "Translation Error" });
+  }
+});
+
 async function translateMessage(message, lang) {
+  console.log("lang =======>", lang);
   try {
     const response = await axios.post(
       API_URL,
@@ -83,6 +118,7 @@ io.on("connection", (socket) => {
   socket.on("sendMessage", async ({ message, params }) => {
     const user = findUser(params);
 
+    console.log("message ===>", message);
     console.log("user ===>", user);
 
     // if (user) {

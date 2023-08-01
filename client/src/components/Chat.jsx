@@ -20,8 +20,6 @@ const Chat = () => {
   const [isOpen, setOpen] = useState(false);
   const [users, setUsers] = useState(0);
 
-  console.log("params", params);
-
   useEffect(() => {
     const searchParams = Object.fromEntries(new URLSearchParams(search));
     setParams(searchParams);
@@ -72,7 +70,7 @@ const Chat = () => {
         </button>
       </div>
       <div className={styles.messages}>
-        <Messages messages={state} name={params.name} />
+        <Messages messages={state} name={params.name} lang={params.lang} />
       </div>
 
       <form className={styles.form} onSubmit={handleSubmit}>
