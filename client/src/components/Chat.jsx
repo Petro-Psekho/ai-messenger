@@ -20,6 +20,8 @@ const Chat = () => {
   const [isOpen, setOpen] = useState(false);
   const [users, setUsers] = useState(0);
 
+  console.log("params", params);
+
   useEffect(() => {
     const searchParams = Object.fromEntries(new URLSearchParams(search));
     setParams(searchParams);

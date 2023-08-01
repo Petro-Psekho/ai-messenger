@@ -1,3 +1,5 @@
+import React from "react";
+
 import styles from "../styles/Messages.module.css";
 
 const Messages = ({ messages, name }) => {
@@ -11,6 +13,7 @@ const Messages = ({ messages, name }) => {
         return (
           <div key={i} className={`${styles.message} ${className}`}>
             <span className={styles.user}>{user.name}</span>
+
             <div className={styles.text}>{message}</div>
           </div>
         );
