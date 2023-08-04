@@ -51,6 +51,7 @@ app.post("/translate", async (req, res) => {
     );
 
     const translatedMessage = response.data.choices[0].message.content;
+
     res.json({ translatedMessage });
   } catch (error) {
     console.error(`Call error API ${MODEL}:`, error.message);
@@ -59,7 +60,6 @@ app.post("/translate", async (req, res) => {
 });
 
 async function translateMessage(message, lang) {
-  console.log("lang =======>", lang);
   try {
     const response = await axios.post(
       API_URL,
@@ -126,7 +126,7 @@ io.on("connection", (socket) => {
     // }
 
     if (user) {
-      // Здесь вызываем функцию для перевода сообщения на язык комнаты
+      // Здесь вызываем функцию для перевода сообщения на язык юзера
       const translatedMessage = await translateMessage(message, user.lang);
 
       // Отправляем переведенное сообщение обратно в комнату

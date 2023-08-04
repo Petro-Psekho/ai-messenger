@@ -5,9 +5,7 @@ const Messages = ({ messages, name, lang }) => {
   const [translatedMessages, setTranslatedMessages] = useState([]);
   const langUser = lang;
 
-  // console.log("langUser", langUser);
-  // console.log("name", name);
-  // console.log("messages", messages);
+  console.log();
 
   useEffect(() => {
     // Функция для перевода сообщения
@@ -43,7 +41,7 @@ const Messages = ({ messages, name, lang }) => {
             }
             return user.name.trim().toLowerCase() === name.trim().toLowerCase()
               ? message
-              : translateMessage(message, langUser); // Вместо user.lang используем langUser
+              : translateMessage(message, langUser);
           })
         );
         setTranslatedMessages(translated);
