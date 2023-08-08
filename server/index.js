@@ -51,6 +51,7 @@ app.post('/translate', async (req, res) => {
     );
 
     const translatedMessage = response.data.choices[0].message.content;
+
     res.json({ translatedMessage });
   } catch (error) {
     console.error(`Call error API ${MODEL}:`, error.message);
