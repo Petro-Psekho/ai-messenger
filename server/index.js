@@ -7,7 +7,7 @@ const axios = require("axios");
 
 require("dotenv").config();
 
-const { API_KEY, API_URL, MODEL } = process.env;
+const { API_KEY, API_URL, MODEL, PROMT } = process.env;
 
 const route = require("./route");
 
@@ -36,7 +36,8 @@ app.post("/translate", async (req, res) => {
         messages: [
           {
             role: "system",
-            content: `you're a professional polyglot translator, translate the message into ${lang}`,
+            // content: `you're a professional polyglot translator, translate the message into ${lang}`,
+            content: PROMT,
           },
           { role: "user", content: message },
         ],
@@ -68,7 +69,8 @@ async function translateMessage(message, lang) {
         messages: [
           {
             role: "system",
-            content: `you're a professional polyglot translator, translate the message into ${lang}`,
+            // content: `you're a professional polyglot translator, translate the message into ${lang}`,
+            content: PROMT,
           },
           { role: "user", content: message },
         ],
@@ -94,8 +96,6 @@ io.on("connection", (socket) => {
   socket.on("join", ({ name, room, lang }) => {
     socket.join(room);
 
-    console.log({ name, room, lang });
-
     const { user, isExist } = addUser({ name, room, lang });
 
     const userMessage = isExist
@@ -117,9 +117,6 @@ io.on("connection", (socket) => {
 
   socket.on("sendMessage", async ({ message, params }) => {
     const user = findUser(params);
-
-    console.log("message ===>", message);
-    console.log("user ===>", user);
 
     // if (user) {
     //   io.to(user.room).emit("message", { data: { user, message } });
